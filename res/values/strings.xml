@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Panigale</string>
+    <string name="app_name">Peace and Quiet</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="static_question_text">What are you doing?</string>
+    <string name="static_status_text">I am...</string>
+    <string-array name="statuses">
+        <item>riding the bus</item>
+        <item>working in the office</item>
+        <item>with my grandchildren</item>
+        <item>sleeping in</item>
+    </string-array>
 
 </resources>

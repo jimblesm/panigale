@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -15,6 +15,24 @@
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+    
+    <style name="SpinnerTextViewItem" parent="@android:style/Widget.TextView" >
+    	<item name="android:textSize">18sp</item>
+    	<item name="android:singleLine">true</item>
+	</style>
+	
+    <style name="EqItem">
+		<item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>       
+        <item name="android:background">#ff0000</item>
+        <item name="android:layout_marginLeft">2dp</item>
+    </style>
+    
+    <style name="EqItemSpacer">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_weight">1</item>"
     </style>
 
 </resources>
