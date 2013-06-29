@@ -3,6 +3,7 @@
 
 package com.swme.panigale;
 
+import android.os.Environment;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,170 +25,172 @@ import java.io.IOException;
 
 public class VisActivity extends Activity {
 
-    //Here is your URL defined
-String url = "http://vprbbc.streamguys.net/vprbbc24.mp3";
-private String mFileName = null;
-    //Constants for vizualizator - HEIGHT 50dip
-private static final float VISUALIZER_HEIGHT_DIP = 50f;
+      //Here is your URL defined
+  private String mFileName = null;
+      //Constants for vizualizator - HEIGHT 50dip
+  private static final float VISUALIZER_HEIGHT_DIP = 50f;
 
-    //Your MediaPlayer
-MediaPlayer mp;
+      //Your MediaPlayer
+  private MediaPlayer mp;
 
-//Vizualization
-private Visualizer mVisualizer;
+  //Vizualization
+  private Visualizer mVisualizer;
 
-    private LinearLayout mLinearLayout;
-    private VisualizerView mVisualizerView;
-    private TextView mStatusTextView;
+      private LinearLayout mLinearLayout;
+      private VisualizerView mVisualizerView;
+      private TextView mStatusTextView;
 
 
-/** Called when the activity is first created. */
-@Override
-public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
+  /** Called when the activity is first created. */
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.main);
 
-    //Info textView
-    mStatusTextView = new TextView(this);
+      mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+      mFileName += "/audiorecordtest.3gp";
 
-    //Create new LinearLayout ( because main.xml is empty )
-    mLinearLayout = new LinearLayout(this);
-    mLinearLayout.setOrientation(LinearLayout.VERTICAL);
-    mLinearLayout.addView(mStatusTextView);
+      //Info textView
+      mStatusTextView = new TextView(this);
 
-    //set content view to new Layout that we create
-    setContentView(mLinearLayout);
+      //Create new LinearLayout ( because main.xml is empty )
+      mLinearLayout = new LinearLayout(this);
+      mLinearLayout.setOrientation(LinearLayout.VERTICAL);
+      mLinearLayout.addView(mStatusTextView);
 
-    //start media player - like normal
-    mp = new MediaPlayer();
-    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+      //set content view to new Layout that we create
+      setContentView(mLinearLayout);
 
-    try {
-        mp.setDataSource(url); // set data source our URL defined
-    } catch (IllegalArgumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (IllegalStateException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }       
+      //start media player - like normal
+      mp = new MediaPlayer();
+      //mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-    try {   //tell your player to go to prepare state
-        mp.prepare(); 
-    } catch (IllegalStateException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-            //Start your stream / player
-    mp.start();
+      try {
+	  mp.setDataSource(mFileName); // set data source our URL defined
+      } catch (IllegalArgumentException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+      } catch (IllegalStateException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+      } catch (IOException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+      }       
 
-    //setup your Vizualizer - call method
-    setupVisualizerFxAndUI();        
+      try {   //tell your player to go to prepare state
+	  mp.prepare(); 
+      } catch (IllegalStateException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+      } catch (IOException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+      }
+	      //Start your stream / player
+      mp.start();
 
-            //enable vizualizer
-            mVisualizer.setEnabled(true);
+      //setup your Vizualizer - call method
+      setupVisualizerFxAndUI();        
 
-            //Info text
-    mStatusTextView.setText("Playing audio...");
-}
+	      //enable vizualizer
+	      mVisualizer.setEnabled(true);
 
-    //Our method that sets Vizualizer
-private void setupVisualizerFxAndUI() {
-    // Create a VisualizerView (defined below), which will render the simplified audio
-    // wave form to a Canvas.
+	      //Info text
+      mStatusTextView.setText("Playing audio...");
+  }
 
-    //You need to have something where to show Audio WAVE - in this case Canvas
-    mVisualizerView = new VisualizerView(this);
-    mVisualizerView.setLayoutParams(new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            (int)(VISUALIZER_HEIGHT_DIP * getResources().getDisplayMetrics().density)));
-    mLinearLayout.addView(mVisualizerView);
+      //Our method that sets Vizualizer
+  private void setupVisualizerFxAndUI() {
+      // Create a VisualizerView (defined below), which will render the simplified audio
+      // wave form to a Canvas.
 
-    // Create the Visualizer object and attach it to our media player.
-    //YOU NEED android.permission.RECORD_AUDIO for that in AndroidManifest.xml
-    mVisualizer = new Visualizer(mp.getAudioSessionId());
-    mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-    mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes,
-                int samplingRate) {
-            mVisualizerView.updateVisualizer(bytes);
-        }
+      //You need to have something where to show Audio WAVE - in this case Canvas
+      mVisualizerView = new VisualizerView(this);
+      mVisualizerView.setLayoutParams(new ViewGroup.LayoutParams(
+	      ViewGroup.LayoutParams.MATCH_PARENT,
+	      (int)(VISUALIZER_HEIGHT_DIP * getResources().getDisplayMetrics().density)));
+      mLinearLayout.addView(mVisualizerView);
 
-        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {}
-    }, Visualizer.getMaxCaptureRate() / 2, true, false); 
-}
+      // Create the Visualizer object and attach it to our media player.
+      //YOU NEED android.permission.RECORD_AUDIO for that in AndroidManifest.xml
+      mVisualizer = new Visualizer(mp.getAudioSessionId());
+      mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+	  public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes,
+		  int samplingRate) {
+	      mVisualizerView.updateVisualizer(bytes);
+	  }
 
-@Override
-protected void onPause() {
-    super.onPause();
+	  public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {}
+      }, Visualizer.getMaxCaptureRate() / 2, true, false); 
+  }
 
-    if (isFinishing() && mp != null) {
-        mVisualizer.release();
-        //mEqualizer.release();
-        mp.release();
-        mp = null;
-    }
-}
+  @Override
+  protected void onPause() {
+      super.onPause();
 
-/**
- * A simple class that draws waveform data received from a
- * {@link Visualizer.OnDataCaptureListener#onWaveFormDataCapture }
- */
-class VisualizerView extends View {
-    private byte[] mBytes;
-    private float[] mPoints;
-    private Rect mRect = new Rect();
+      if (isFinishing() && mp != null) {
+	  mVisualizer.release();
+	  //mEqualizer.release();
+	  mp.release();
+	  mp = null;
+      }
+  }
 
-    private Paint mForePaint = new Paint();
+  /**
+   * A simple class that draws waveform data received from a
+   * {@link Visualizer.OnDataCaptureListener#onWaveFormDataCapture }
+   */
+  class VisualizerView extends View {
+      private byte[] mBytes;
+      private float[] mPoints;
+      private Rect mRect = new Rect();
 
-    public VisualizerView(Context context) {
-        super(context);
-        init();
-    }
+      private Paint mForePaint = new Paint();
 
-    private void init() {
-        mBytes = null;
+      public VisualizerView(Context context) {
+	  super(context);
+	  init();
+      }
 
-        mForePaint.setStrokeWidth(1f);
-        mForePaint.setAntiAlias(true);
-        mForePaint.setColor(Color.rgb(0, 128, 255));
-    }
+      private void init() {
+	  mBytes = null;
 
-    public void updateVisualizer(byte[] bytes) {
-        mBytes = bytes;
-        invalidate();
-    }
+	  mForePaint.setStrokeWidth(1f);
+	  mForePaint.setAntiAlias(true);
+	  mForePaint.setColor(Color.rgb(0, 128, 255));
+      }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+      public void updateVisualizer(byte[] bytes) {
+	  mBytes = bytes;
+	  invalidate();
+      }
 
-        if (mBytes == null) {
-            return;
-        }
+      @Override
+      protected void onDraw(Canvas canvas) {
+	  super.onDraw(canvas);
 
-        if (mPoints == null || mPoints.length < mBytes.length * 4) {
-            mPoints = new float[mBytes.length * 4];
-        }
+	  if (mBytes == null) {
+	      return;
+	  }
 
-        mRect.set(0, 0, getWidth(), getHeight());
+	  if (mPoints == null || mPoints.length < mBytes.length * 4) {
+	      mPoints = new float[mBytes.length * 4];
+	  }
 
-        for (int i = 0; i < mBytes.length - 1; i++) {
-            mPoints[i * 4] = mRect.width() * i / (mBytes.length - 1);
-            mPoints[i * 4 + 1] = mRect.height() / 2
-                    + ((byte) (mBytes[i] + 128)) * (mRect.height() / 2) / 128;
-            mPoints[i * 4 + 2] = mRect.width() * (i + 1) / (mBytes.length - 1);
-            mPoints[i * 4 + 3] = mRect.height() / 2
-                    + ((byte) (mBytes[i + 1] + 128)) * (mRect.height() / 2) / 128;
-        }
+	  mRect.set(0, 0, getWidth(), getHeight());
 
-        canvas.drawLines(mPoints, mForePaint);
-    }
-}
+	  for (int i = 0; i < mBytes.length - 1; i++) {
+	      mPoints[i * 4] = mRect.width() * i / (mBytes.length - 1);
+	      mPoints[i * 4 + 1] = mRect.height() / 2
+		      + ((byte) (mBytes[i] + 128)) * (mRect.height() / 2) / 128;
+	      mPoints[i * 4 + 2] = mRect.width() * (i + 1) / (mBytes.length - 1);
+	      mPoints[i * 4 + 3] = mRect.height() / 2
+		      + ((byte) (mBytes[i + 1] + 128)) * (mRect.height() / 2) / 128;
+	  }
+
+	  canvas.drawLines(mPoints, mForePaint);
+      }
+  }
 }
