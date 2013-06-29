@@ -1,176 +1,193 @@
-/*
- * The application needs to have the permission to write to external storage
- * if the output file is written to the external storage, and also the
- * permission to record audio. These permissions must be set in the
- * application's AndroidManifest.xml file, with something like:
- *
- * <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
- * <uses-permission android:name="android.permission.RECORD_AUDIO" />
- *
- */
+//android.permission.MODIFY_AUDIO_SETTINGS for audio settings and also
+//android.permission.INTERNET for internet streaming
+
 package com.swme.panigale;
 
 import android.app.Activity;
-import android.widget.LinearLayout;
-import android.os.Bundle;
-import android.os.Environment;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.content.Context;
-import android.util.Log;
-import android.media.MediaRecorder;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 
+public class VisActivity extends Activity {
 
-public class VisActivity extends Activity
-{
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static String mFileName = null;
+    //Here is your URL defined
+String url = "http://vprbbc.streamguys.net/vprbbc24.mp3";
 
-    private RecordButton mRecordButton = null;
-    private MediaRecorder mRecorder = null;
+    //Constants for vizualizator - HEIGHT 50dip
+private static final float VISUALIZER_HEIGHT_DIP = 50f;
 
-    private PlayButton   mPlayButton = null;
-    private MediaPlayer   mPlayer = null;
+    //Your MediaPlayer
+MediaPlayer mp;
 
-    private void onRecord(boolean start) {
-        if (start) {
-            startRecording();
-        } else {
-            stopRecording();
+//Vizualization
+private Visualizer mVisualizer;
+
+    private LinearLayout mLinearLayout;
+    private VisualizerView mVisualizerView;
+    private TextView mStatusTextView;
+
+
+/** Called when the activity is first created. */
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.main);
+
+    //Info textView
+    mStatusTextView = new TextView(this);
+
+    //Create new LinearLayout ( because main.xml is empty )
+    mLinearLayout = new LinearLayout(this);
+    mLinearLayout.setOrientation(LinearLayout.VERTICAL);
+    mLinearLayout.addView(mStatusTextView);
+
+    //set content view to new Layout that we create
+    setContentView(mLinearLayout);
+
+    //start media player - like normal
+    mp = new MediaPlayer();
+    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+    try {
+        mp.setDataSource(url); // set data source our URL defined
+    } catch (IllegalArgumentException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (IllegalStateException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }       
+
+    try {   //tell your player to go to prepare state
+        mp.prepare(); 
+    } catch (IllegalStateException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+            //Start your stream / player
+    mp.start();
+
+    //setup your Vizualizer - call method
+    setupVisualizerFxAndUI();        
+
+            //enable vizualizer
+            mVisualizer.setEnabled(true);
+
+            //Info text
+    mStatusTextView.setText("Playing audio...");
+}
+
+    //Our method that sets Vizualizer
+private void setupVisualizerFxAndUI() {
+    // Create a VisualizerView (defined below), which will render the simplified audio
+    // wave form to a Canvas.
+
+    //You need to have something where to show Audio WAVE - in this case Canvas
+    mVisualizerView = new VisualizerView(this);
+    mVisualizerView.setLayoutParams(new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            (int)(VISUALIZER_HEIGHT_DIP * getResources().getDisplayMetrics().density)));
+    mLinearLayout.addView(mVisualizerView);
+
+    // Create the Visualizer object and attach it to our media player.
+    //YOU NEED android.permission.RECORD_AUDIO for that in AndroidManifest.xml
+    mVisualizer = new Visualizer(mp.getAudioSessionId());
+    mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+    mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes,
+                int samplingRate) {
+            mVisualizerView.updateVisualizer(bytes);
         }
+
+        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {}
+    }, Visualizer.getMaxCaptureRate() / 2, true, false); 
+}
+
+@Override
+protected void onPause() {
+    super.onPause();
+
+    if (isFinishing() && mp != null) {
+        mVisualizer.release();
+        //mEqualizer.release();
+        mp.release();
+        mp = null;
+    }
+}
+
+/**
+ * A simple class that draws waveform data received from a
+ * {@link Visualizer.OnDataCaptureListener#onWaveFormDataCapture }
+ */
+class VisualizerView extends View {
+    private byte[] mBytes;
+    private float[] mPoints;
+    private Rect mRect = new Rect();
+
+    private Paint mForePaint = new Paint();
+
+    public VisualizerView(Context context) {
+        super(context);
+        init();
     }
 
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
-            stopPlaying();
-        }
+    private void init() {
+        mBytes = null;
+
+        mForePaint.setStrokeWidth(1f);
+        mForePaint.setAntiAlias(true);
+        mForePaint.setColor(Color.rgb(0, 128, 255));
     }
 
-    private void startPlaying() {
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(mFileName);
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        mPlayer.release();
-        mPlayer = null;
-    }
-
-    private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        mRecorder.start();
-    }
-
-    private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-    }
-
-    class RecordButton extends Button {
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                if (mStartRecording) {
-                    setText("Stop recording");
-                } else {
-                    setText("Start recording");
-                }
-                mStartRecording = !mStartRecording;
-            }
-        };
-
-        public RecordButton(Context ctx) {
-            super(ctx);
-            setText("Start recording");
-            setOnClickListener(clicker);
-        }
-    }
-
-    class PlayButton extends Button {
-        boolean mStartPlaying = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onPlay(mStartPlaying);
-                if (mStartPlaying) {
-                    setText("Stop playing");
-                } else {
-                    setText("Start playing");
-                }
-                mStartPlaying = !mStartPlaying;
-            }
-        };
-
-        public PlayButton(Context ctx) {
-            super(ctx);
-            setText("Start playing");
-            setOnClickListener(clicker);
-        }
-    }
-
-    public VisActivity() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
+    public void updateVisualizer(byte[] bytes) {
+        mBytes = bytes;
+        invalidate();
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
-        LinearLayout ll = new LinearLayout(this);
-        mRecordButton = new RecordButton(this);
-        ll.addView(mRecordButton,
-            new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                0));
-        mPlayButton = new PlayButton(this);
-        ll.addView(mPlayButton,
-            new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                0));
-        setContentView(ll);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
+        if (mBytes == null) {
+            return;
         }
 
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
+        if (mPoints == null || mPoints.length < mBytes.length * 4) {
+            mPoints = new float[mBytes.length * 4];
         }
+
+        mRect.set(0, 0, getWidth(), getHeight());
+
+        for (int i = 0; i < mBytes.length - 1; i++) {
+            mPoints[i * 4] = mRect.width() * i / (mBytes.length - 1);
+            mPoints[i * 4 + 1] = mRect.height() / 2
+                    + ((byte) (mBytes[i] + 128)) * (mRect.height() / 2) / 128;
+            mPoints[i * 4 + 2] = mRect.width() * (i + 1) / (mBytes.length - 1);
+            mPoints[i * 4 + 3] = mRect.height() / 2
+                    + ((byte) (mBytes[i + 1] + 128)) * (mRect.height() / 2) / 128;
+        }
+
+        canvas.drawLines(mPoints, mForePaint);
     }
+}
 }
