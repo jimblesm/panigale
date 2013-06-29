@@ -23,7 +23,6 @@
             </intent-filter>
         </activity>
 	<activity 
-	    android:theme="@android:style/Theme.Black.NoTitleBar"
 	    android:name="VisActivity"
 	    android:label="VisActivity">
 	</activity>
