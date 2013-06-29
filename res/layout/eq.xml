@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:id="@+id/eq_layout">
+    
+    <View
+    android:id="@+id/bar_1"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+        
+    <View
+    android:id="@+id/bar_2"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+    <View
+    android:id="@+id/bar_3"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+    <View
+    android:id="@+id/bar_4"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+    <View
+    android:id="@+id/bar_5"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+    <View
+    android:id="@+id/bar_6"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+    <View
+    android:id="@+id/bar_7"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+    <View
+    android:id="@+id/bar_8"
+	style="@style/EqItem" />
+    
+    <View style="@style/EqItemSpacer"/>
+    
+	<View
+    android:id="@+id/bar_9"
+	style="@style/EqItem" />
+    
+
+</LinearLayout>
