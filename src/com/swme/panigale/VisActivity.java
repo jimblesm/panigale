@@ -26,7 +26,7 @@ public class VisActivity extends Activity {
 
     //Here is your URL defined
 String url = "http://vprbbc.streamguys.net/vprbbc24.mp3";
-
+private String mFileName = null;
     //Constants for vizualizator - HEIGHT 50dip
 private static final float VISUALIZER_HEIGHT_DIP = 50f;
 

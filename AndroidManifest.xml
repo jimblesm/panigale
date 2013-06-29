@@ -26,6 +26,10 @@
 	    android:name="VisActivity"
 	    android:label="VisActivity">
 	</activity>
+	<activity 
+	    android:name="CapActivity"
+	    android:label="CapActivity">
+	</activity>
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
