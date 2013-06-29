@@ -3,6 +3,7 @@ package com.swme.panigale;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.content.Intent;
 
 public class PanigaleActivity extends Activity {
 
@@ -10,6 +11,8 @@ public class PanigaleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_panigale);
+		Intent i = new Intent(this, VisActivity.class);
+		startActivity(i);
 	}
 
 	@Override
