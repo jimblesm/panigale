@@ -23,6 +23,9 @@ import java.io.IOException;
 public class PanigaleActivity extends Activity {
 
 	private static final String LOG_TAG = "PanigaleActivity";
+	private static final int CAPTURE_RATE = (int)
+						(Visualizer.getMaxCaptureRate() -
+						Visualizer.getMaxCaptureRate()* 0.2f);
 	private static byte[] array;
 	private Visualizer mVisualizer;
 	private MediaPlayer mPlayer;
@@ -141,7 +144,7 @@ public class PanigaleActivity extends Activity {
 		//double modifier = Math.random();
 		//here I'm trying to drop the top X0 percent of values to 
 		//make it look more full
-		float range = (float) bytes.length-bytes.length*0.8f;
+		float range = (float) bytes.length-bytes.length*0.6f;
 		//number of bars evenly distributed over range
 		int barMult = (int)(range / 9.0f);
 		  for (int i=1; i < eqViews.length+1; i++) {
@@ -162,9 +165,23 @@ public class PanigaleActivity extends Activity {
 		  }
 		//array = new byte[v.getCaptureSize()];
 	      }
-	  }, Visualizer.getMaxCaptureRate() / 2, false, true); 
+	  }, CAPTURE_RATE, false, true); 
 
 	}
+
+   @Override
+    public void onPause() {
+        super.onPause();
+        if (mVisualizer != null) {
+            mVisualizer.release();
+            mVisualizer = null;
+        }
+
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
 
 
 }
