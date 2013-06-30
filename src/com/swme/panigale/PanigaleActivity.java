@@ -193,5 +193,14 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
         }
   }
 
+  @Override
+  public void onResume() {
+        super.onResume();
+        if (mVisualizer == null) {
+	  startPlaying();
+        }
+  }
+
+
 
 }
