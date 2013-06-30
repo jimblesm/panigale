@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Menu;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -59,6 +60,7 @@ public class PanigaleActivity extends Activity implements
 	private Handler mainHandler;
 	private AudioThread mAudioThread;
 	private View eq;
+	private TextView description;
 	
 	private ArrayAdapter<CharSequence> placeSpinnerAdapter;
 	
@@ -82,7 +84,6 @@ public class PanigaleActivity extends Activity implements
 		createPlaceSpinner(R.array.places_commuting);
 		
 		eq = findViewById(R.id.eq_container);
-		eq = findViewById(R.id.eq_container);
 		ScaleView sV = (ScaleView) findViewById(R.id.scale_view);
 		sV.addScaleEventListener(this);
 
@@ -102,7 +103,13 @@ public class PanigaleActivity extends Activity implements
 			handler.postDelayed(new EqRunnable(), 50);
 		}*/
 		//startPlaying();
+		
+		description = (TextView) findViewById(R.id.description);
+		ScaleView scaleView = (ScaleView) findViewById(R.id.scale_view);
+		scaleView.addTextViewForUpdating(description);
 	}
+	
+	
 
 //	private void createHeaderTypeface() {
 //		TextView header = (TextView) findViewById(R.id.header);
@@ -147,6 +154,11 @@ public class PanigaleActivity extends Activity implements
 				createPlaceSpinner(R.array.places_working);
 			} else if (id == 2) {
 				createPlaceSpinner(R.array.places_playing);
+			} else if (id == 3) {
+				createPlaceSpinner(R.array.places_bed);
+				ScaleView scaleView = (ScaleView) findViewById(R.id.scale_view);
+				scaleView.setBounds(50);
+				description.setText(R.string.level_high);
 			}
 		}
 

@@ -5,13 +5,11 @@ import java.util.List;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * Scales a rectangle. 
@@ -23,7 +21,8 @@ public class ScaleView extends FrameLayout {
 
 
 	private ScaleGestureDetector detector;
-	private View rectangle;
+	private int bounds;
+	private TextView description;
 	
 	public ScaleView(Context context) {
 		super(context);
@@ -44,7 +43,7 @@ public class ScaleView extends FrameLayout {
 		PanigaleOnScaleGestureDetectorListener listener = new PanigaleOnScaleGestureDetectorListener();
 		detector = new ScaleGestureDetector(getContext(), listener); 
         
-        rectangle = LayoutInflater.from(getContext()).inflate(R.layout.eq_threshold, this);
+        bounds = 250;
 //        rectangle = new View(getContext(), null, R.style.EqBackground);
 //        rectangle.setBackgroundColor(getContext().getResources().getColor(R.color.light_blue));
 //        this.addView(rectangle);
@@ -66,42 +65,60 @@ public class ScaleView extends FrameLayout {
 		
 		@Override
 		public boolean onScale (ScaleGestureDetector detector) {
-			
-			
 			float scaleFactor = detector.getScaleFactor();
 			if (Math.abs(1 - scaleFactor) < .05) {
 				return false;
 			}
-			
-			RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rectangle.getLayoutParams();
-			int bottomMargin = layoutParams.bottomMargin;
-			
-			int newMargin;
+
+			int newBounds;
 			if (scaleFactor < 1) {
-				newMargin = bottomMargin + (int) (250 * (1 - scaleFactor));	
+				newBounds = bounds + (int) (250 * (1 - scaleFactor));	
 			} else {
-				newMargin = bottomMargin - (int) (250 * (scaleFactor - 1));
+				newBounds = bounds - (int) (250 * (scaleFactor - 1));
 			}
 			 
-			if (newMargin > 250) {
-				newMargin = 250;
-			}
-			
-			if (newMargin < 0) {
-				newMargin = 0;
-			}
+			newBounds = checkBounds(newBounds);
 		
 			for(ScaleEventListener l : ScaleEventListeners) {
-			  l.onScaleEvent(newMargin);
+			  l.onScaleEvent(newBounds);
 			}
 			
-			layoutParams.bottomMargin = newMargin;
-			layoutParams.topMargin = newMargin;
+			bounds = newBounds;
 			
-			rectangle.setLayoutParams(layoutParams);
+			if (description != null) {
+				if (bounds > 175) {
+					description.setText(R.string.level_high);
+				} else if (bounds > 100) {
+					description.setText(R.string.level_medium);
+				} else if (bounds > 25) {
+					description.setText(R.string.level_low);
+				} else {
+					description.setText(R.string.level_off);
+				}
+			}
 			
 			return true;
 		}
+
+	}
+	
+	public void addTextViewForUpdating(TextView textView) {
+		this.description = textView;
+	}
+	
+	public void setBounds(int bounds) {
+		this.bounds = checkBounds(bounds);
+	}
+	
+	private int checkBounds(int newBounds) {
+		if (newBounds > 250) {
+			newBounds = 250;
+		}
+		
+		if (newBounds < 0) {
+			newBounds = 0;
+		}
+		return newBounds;
 	}
 
 }

@@ -53,5 +53,9 @@
         layout="@layout/eq"
         android:layout_height="300dp"
         android:layout_width="match_parent" />
+    
+    <TextView android:id="@+id/description"
+        style="@style/Description"
+        android:text="@string/level_off"/>
    
 </LinearLayout>

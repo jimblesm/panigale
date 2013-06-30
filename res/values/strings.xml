@@ -10,24 +10,34 @@
         <item>travelling</item>
         <item>working</item>
         <item>playing</item>
+        <item>sleeping</item>
     </string-array>
     
     <string-array name="places_commuting">
-		<item>on the bus</item>
-		<item>in the car</item>
-		<item>on my bicycle</item>        
+		<item>on the bus.</item>
+		<item>in the car.</item>
+		<item>on my bicycle.</item>        
     </string-array>
     
     <string-array name="places_working">
-        <item>in the office</item>
-        <item>at the construction site</item>
-        <item>in a coffee shop</item>
+        <item>in the office.</item>
+        <item>at the construction site.</item>
+        <item>in a coffee shop.</item>
     </string-array>
     
     <string-array name="places_playing">
-        <item>with my grandchildren</item>
-        <item>at the bar</item>
-        <item>at a concert</item>
+        <item>with my grandchildren.</item>
+        <item>at the bar.</item>
+        <item>at a concert.</item>
     </string-array>
+    
+    <string-array name="places_bed">
+        <item>until 7am.</item>
+    </string-array>
+    
+    <string name="level_high">\"Shut out the world\"</string>
+    <string name="level_medium">\"Let a little life in\"</string>
+    <string name="level_low">\"Don\'t sweat the small stuff\"</string>
+    <string name="level_off">\"Hear everything\"</string>
 
 </resources>
