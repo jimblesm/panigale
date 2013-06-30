@@ -241,7 +241,7 @@ public class PanigaleActivity extends Activity implements
   public void onScaleEvent(int newSize) {
     mVolume = 300 - newSize;
   }
-
+/* Not for demo
   @Override
   public void onPause() {
         super.onPause();
@@ -249,21 +249,14 @@ public class PanigaleActivity extends Activity implements
             mVisualizer.release();
             mVisualizer = null;
         }
-
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
-        }
   }
-/*
   @Override
   public void onResume() {
-        super.onResume();
-        if (mVisualizer == null) {
-	  startPlaying();
-        }
+	super.onResume();
+	if (mVisualizer == null) {
+	  startAudioThread();
+	}
   }
 */
-
 
 }
