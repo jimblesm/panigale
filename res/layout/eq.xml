@@ -5,6 +5,7 @@
     > 
     
 	<com.swme.panigale.ScaleView 
+		android:id="@+id/scale_view"
 		style="@style/DrawView"/>
     
         	

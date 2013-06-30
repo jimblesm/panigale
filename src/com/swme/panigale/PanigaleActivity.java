@@ -20,7 +20,7 @@ import android.media.audiofx.Visualizer;
 
 import java.io.IOException;
 
-public class PanigaleActivity extends Activity {
+public class PanigaleActivity extends Activity implements ScaleEventListener {
 
 	private static final String LOG_TAG = "PanigaleActivity";
 	private static final int CAPTURE_RATE = (int)
@@ -84,6 +84,9 @@ public class PanigaleActivity extends Activity {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		eq = findViewById(R.id.eq_container);
+		eq = findViewById(R.id.eq_container);
+		ScaleView sV = (ScaleView) findViewById(R.id.scale_view);
+		sV.addScaleEventListener(this);
 /*		
 		if (handlerThread == null) {
 			handlerThread = new HandlerThread("EQ Thread");
@@ -172,8 +175,12 @@ public class PanigaleActivity extends Activity {
 
 	}
 
-   @Override
-    public void onPause() {
+  public void onScaleEvent(int newSize) {
+    mVolume = 300 - newSize;
+  }
+
+  @Override
+  public void onPause() {
         super.onPause();
         if (mVisualizer != null) {
             mVisualizer.release();
@@ -184,7 +191,7 @@ public class PanigaleActivity extends Activity {
             mPlayer.release();
             mPlayer = null;
         }
-    }
+  }
 
 
 }

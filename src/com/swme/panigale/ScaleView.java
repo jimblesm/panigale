@@ -12,10 +12,17 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Scales a rectangle. 
  */
 public class ScaleView extends FrameLayout {
+
+	private static List<ScaleEventListener> ScaleEventListeners = 
+			  new ArrayList<ScaleEventListener>();
+
 
 	private ScaleGestureDetector detector;
 	private Paint paint;
@@ -50,13 +57,17 @@ public class ScaleView extends FrameLayout {
 //        rectangle.setBackgroundColor(getContext().getResources().getColor(R.color.light_blue));
 //        this.addView(rectangle);
 	}
+
+	public void addScaleEventListener( ScaleEventListener l ){
+	  ScaleEventListeners.add(l);
+	}
 		
 	@Override
-	  public boolean onTouchEvent(MotionEvent event) {
+	public boolean onTouchEvent(MotionEvent event) {
 	    detector.onTouchEvent(event);
 	    invalidate();
 	    return true;
-	  }
+	}
 
 	
 	private class PanigaleOnScaleGestureDetectorListener extends SimpleOnScaleGestureListener {
@@ -87,14 +98,15 @@ public class ScaleView extends FrameLayout {
 			if (newMargin < 0) {
 				newMargin = 0;
 			}
-			
+		
+			for(ScaleEventListener l : ScaleEventListeners) {
+			  l.onScaleEvent(newMargin);
+			}
 			
 			layoutParams.bottomMargin = newMargin;
 			layoutParams.topMargin = newMargin;
 			
 			rectangle.setLayoutParams(layoutParams);
-			
-			
 			
 			return true;
 		}
