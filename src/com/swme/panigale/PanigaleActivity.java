@@ -19,6 +19,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.util.Log;
 
 public class PanigaleActivity extends Activity implements 
 							  ScaleEventListener, 
@@ -144,28 +145,33 @@ public class PanigaleActivity extends Activity implements
 		return true;
 	}
 	
-	private class ActivitySpinnerOnItemSelectedListener implements OnItemSelectedListener {
+	private class ActivitySpinnerOnItemSelectedListener implements 
+							    OnItemSelectedListener {
+	  @Override
+	  public void onItemSelected(AdapterView<?> parent, View view, 
+						    int position, long id) {
+		  ScaleView scaleView = 
+				(ScaleView) findViewById(R.id.scale_view);
+		  if (id == 0) {
+		    createPlaceSpinner(R.array.places_commuting);	
+		    scaleView.scaleNow(200);
+		  } else if (id == 1) {
+		    createPlaceSpinner(R.array.places_working);
+		    scaleView.scaleNow(150);
+		  } else if (id == 2) {
+		    createPlaceSpinner(R.array.places_playing);
+		    scaleView.scaleNow(0);
+		  } else if (id == 3) {
+		    createPlaceSpinner(R.array.places_bed);
+		    scaleView.scaleNow(250);
+		  }
+		 // description.setText(R.string.level_high);
+	  }
 
-		@Override
-		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-			if (id == 0) {
-				createPlaceSpinner(R.array.places_commuting);	
-			} else if (id == 1) {
-				createPlaceSpinner(R.array.places_working);
-			} else if (id == 2) {
-				createPlaceSpinner(R.array.places_playing);
-			} else if (id == 3) {
-				createPlaceSpinner(R.array.places_bed);
-				ScaleView scaleView = (ScaleView) findViewById(R.id.scale_view);
-				scaleView.setBounds(50);
-				description.setText(R.string.level_high);
-			}
-		}
-
-		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// do nothing
-		}
+	      @Override
+	      public void onNothingSelected(AdapterView<?> arg0) {
+		      // do nothing
+	      }
 		
 	}
 	

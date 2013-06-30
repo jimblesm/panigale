@@ -10,6 +10,7 @@ import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.util.Log;
 
 /**
  * Scales a rectangle. 
@@ -61,55 +62,56 @@ public class ScaleView extends FrameLayout {
 	}
 
 	
-	private class PanigaleOnScaleGestureDetectorListener extends SimpleOnScaleGestureListener {
-		
-		@Override
-		public boolean onScale (ScaleGestureDetector detector) {
-			float scaleFactor = detector.getScaleFactor();
-			if (Math.abs(1 - scaleFactor) < .05) {
-				return false;
-			}
+	private class PanigaleOnScaleGestureDetectorListener extends 
+					SimpleOnScaleGestureListener {
+	  @Override
+	  public boolean onScale (ScaleGestureDetector detector) {
+	      float scaleFactor = detector.getScaleFactor();
+	      if (Math.abs(1 - scaleFactor) < .05) {
+		      return false;
+	      }
+	      int newBounds;
+	      if (scaleFactor < 1) {
+		      newBounds = bounds + (int) (250 * (1 - scaleFactor));	
+	      } else {
+		      newBounds = bounds - (int) (250 * (scaleFactor - 1));
+	      }
+	      return scaleNow(newBounds);
+	  }
+	}
 
-			int newBounds;
-			if (scaleFactor < 1) {
-				newBounds = bounds + (int) (250 * (1 - scaleFactor));	
-			} else {
-				newBounds = bounds - (int) (250 * (scaleFactor - 1));
-			}
-			 
-			newBounds = checkBounds(newBounds);
-		
-			for(ScaleEventListener l : ScaleEventListeners) {
-			  l.onScaleEvent(newBounds);
-			}
-			
-			bounds = newBounds;
-			
-			if (description != null) {
-				if (bounds > 175) {
-					description.setText(R.string.level_high);
-				} else if (bounds > 100) {
-					description.setText(R.string.level_medium);
-				} else if (bounds > 25) {
-					description.setText(R.string.level_low);
-				} else {
-					description.setText(R.string.level_off);
-				}
-			}
-			
-			return true;
-		}
-
+	public boolean scaleNow(int newBounds) {
+	    newBounds = checkBounds(newBounds);
+	    Log.i(PanigaleActivity.LOG_TAG, "and SCALE" + newBounds); 
+	    for(ScaleEventListener l : ScaleEventListeners) {
+	      l.onScaleEvent(newBounds);
+	    }
+	    
+	    bounds = newBounds;
+	    
+	    if (description != null) {
+		    if (bounds > 175) {
+			    description.setText(R.string.level_high);
+		    } else if (bounds > 100) {
+			    description.setText(R.string.level_medium);
+		    } else if (bounds > 25) {
+			    description.setText(R.string.level_low);
+		    } else {
+			    description.setText(R.string.level_off);
+		    }
+	    }
+	    return true;
 	}
 	
 	public void addTextViewForUpdating(TextView textView) {
 		this.description = textView;
 	}
-	
+/*	
 	public void setBounds(int bounds) {
 		this.bounds = checkBounds(bounds);
+		invalidate();
 	}
-	
+*/	
 	private int checkBounds(int newBounds) {
 		if (newBounds > 250) {
 			newBounds = 250;
