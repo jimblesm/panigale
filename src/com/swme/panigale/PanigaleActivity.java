@@ -28,7 +28,7 @@ public class PanigaleActivity extends Activity {
 	private MediaPlayer mPlayer;
 	private String mFileName;
 	// set this to change visulization amplitude
-	private static int mVolume = 250;
+	private static int mVolume = 200;
 
 	private int[] eqViews = { R.id.bar_1, R.id.bar_2, R.id.bar_3,
 				  R.id.bar_4, R.id.bar_5, R.id.bar_6,
@@ -139,8 +139,10 @@ public class PanigaleActivity extends Activity {
 	      public void onFftDataCapture(Visualizer vis, 
 					   byte[] bytes, int samplingRate) {
 		//double modifier = Math.random();
-		float range = (float) bytes.length-bytes.length*0.6f;
-		//number of bars evenly distributed
+		//here I'm trying to drop the top X0 percent of values to 
+		//make it look more full
+		float range = (float) bytes.length-bytes.length*0.8f;
+		//number of bars evenly distributed over range
 		int barMult = (int)(range / 9.0f);
 		  for (int i=1; i < eqViews.length+1; i++) {
 		      final View v = PanigaleActivity.this.findViewById(eqViews[i-1]);
