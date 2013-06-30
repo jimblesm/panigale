@@ -6,10 +6,27 @@
     <string name="static_question_text">What are you doing?</string>
     <string name="static_status_text">I am...</string>
     <string-array name="statuses">
-        <item>riding the bus</item>
-        <item>working in the office</item>
+        <item>travelling</item>
+        <item>working</item>
+        <item>playing</item>
+    </string-array>
+    
+    <string-array name="places_commuting">
+		<item>on the bus</item>
+		<item>in the car</item>
+		<item>on my bicycle</item>        
+    </string-array>
+    
+    <string-array name="places_working">
+        <item>in the office</item>
+        <item>at the construction site</item>
+        <item>in a coffee shop</item>
+    </string-array>
+    
+    <string-array name="places_playing">
         <item>with my grandchildren</item>
-        <item>sleeping in</item>
+        <item>at the bar</item>
+        <item>at a concert</item>
     </string-array>
 
 </resources>

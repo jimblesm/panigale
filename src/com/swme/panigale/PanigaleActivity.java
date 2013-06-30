@@ -1,24 +1,19 @@
 package com.swme.panigale;
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Environment;
-import android.view.Menu;
-import android.content.Intent;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.util.Log;
-
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
-
-import java.io.IOException;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 public class PanigaleActivity extends Activity implements ScaleEventListener {
 
@@ -36,13 +31,8 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 	private int[] eqViews = { R.id.bar_1, R.id.bar_2, R.id.bar_3,
 				  R.id.bar_4, R.id.bar_5, R.id.bar_6,
 				  R.id.bar_7, R.id.bar_8, R.id.bar_9 };
-/*
-	private class EqRunnable implements Runnable {
-		@Override
-		public void run() {
-		}
-	}
-*/	
+
+	
 	private static class MainHandler extends Handler {
 		private PanigaleActivity activity;
 		
@@ -64,6 +54,8 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 
 	private View eq;
 	
+	private ArrayAdapter<CharSequence> placeSpinnerAdapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,16 +65,11 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 				.getAbsolutePath();
 		mFileName += "/audiorecordtest.3gp";
 */		
-		// create spinner
-		Spinner spinner = (Spinner) findViewById(R.id.status_spinner);
 		
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter
-		  					.createFromResource(this, 
-							    R.array.statuses,
-							    R.layout.spinner_item);
-
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
+		// create spinners
+		createActivitySpinner();
+		createPlaceSpinner(R.array.places_commuting);
+		
 		eq = findViewById(R.id.eq_container);
 		eq = findViewById(R.id.eq_container);
 		ScaleView sV = (ScaleView) findViewById(R.id.scale_view);
@@ -104,11 +91,51 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 		startPlaying();
 	}
 
+	private void createActivitySpinner() {
+		Spinner activitySpinner = (Spinner) findViewById(R.id.activity_spinner);
+		
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.statuses, R.layout.spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		activitySpinner.setAdapter(adapter);
+		
+		activitySpinner.setOnItemSelectedListener(new ActivitySpinnerOnItemSelectedListener());
+	}
+	
+	private void createPlaceSpinner(int itemResourceId) {
+		Spinner placeSpinner = (Spinner) findViewById(R.id.place_spinner);
+		placeSpinnerAdapter = ArrayAdapter.createFromResource(this, itemResourceId, R.layout.spinner_item);
+		placeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		placeSpinner.setAdapter(placeSpinnerAdapter);
+	}
+
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.panigale, menu);
 		return true;
+	}
+	
+	private class ActivitySpinnerOnItemSelectedListener implements OnItemSelectedListener {
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+			if (id == 0) {
+				createPlaceSpinner(R.array.places_commuting);	
+			} else if (id == 1) {
+				createPlaceSpinner(R.array.places_working);
+			} else if (id == 2) {
+				createPlaceSpinner(R.array.places_playing);
+			}
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// do nothing
+		}
+		
 	}
 	
 

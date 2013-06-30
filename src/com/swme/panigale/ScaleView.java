@@ -1,8 +1,9 @@
 package com.swme.panigale;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -11,9 +12,6 @@ import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Scales a rectangle. 
@@ -25,7 +23,6 @@ public class ScaleView extends FrameLayout {
 
 
 	private ScaleGestureDetector detector;
-	private Paint paint;
 	private View rectangle;
 	
 	public ScaleView(Context context) {
@@ -46,11 +43,6 @@ public class ScaleView extends FrameLayout {
 	private void init() {
 		PanigaleOnScaleGestureDetectorListener listener = new PanigaleOnScaleGestureDetectorListener();
 		detector = new ScaleGestureDetector(getContext(), listener); 
-
-		paint = new Paint();
-        paint.setColor(Color.BLUE);
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(15);
         
         rectangle = LayoutInflater.from(getContext()).inflate(R.layout.eq_threshold, this);
 //        rectangle = new View(getContext(), null, R.style.EqBackground);
@@ -59,7 +51,7 @@ public class ScaleView extends FrameLayout {
 	}
 
 	public void addScaleEventListener( ScaleEventListener l ){
-	  ScaleEventListeners.add(l);
+		ScaleEventListeners.add(l);
 	}
 		
 	@Override
