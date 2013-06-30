@@ -27,6 +27,8 @@ public class PanigaleActivity extends Activity {
 	private Visualizer mVisualizer;
 	private MediaPlayer mPlayer;
 	private String mFileName;
+	// set this to change visulization amplitude
+	private static int mVolume = 250;
 
 	private int[] eqViews = { R.id.bar_1, R.id.bar_2, R.id.bar_3,
 				  R.id.bar_4, R.id.bar_5, R.id.bar_6,
@@ -103,6 +105,8 @@ public class PanigaleActivity extends Activity {
 	}
 
 	public void startPlaying() {
+	  
+	  /*Not entirely necessary.
 	  mPlayer = new MediaPlayer();
 	  //mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 	  try{
@@ -111,7 +115,7 @@ public class PanigaleActivity extends Activity {
 	  }catch (IOException e) {
 	      Log.e(LOG_TAG, "prepare() failed");
 	  }
-	  mPlayer.start();
+	  mPlayer.start();*/
 	  //setup your Vizualizer - call method
 	  //setupVisualizerFxAndUI();        
 	  setupVisualizer();
@@ -135,12 +139,15 @@ public class PanigaleActivity extends Activity {
 	      public void onFftDataCapture(Visualizer vis, 
 					   byte[] bytes, int samplingRate) {
 		//double modifier = Math.random();
-		  for (int i=1; i < eqViews.length; i++) {
+		float range = (float) bytes.length-bytes.length*0.6f;
+		//number of bars evenly distributed
+		int barMult = (int)(range / 9.0f);
+		  for (int i=1; i < eqViews.length+1; i++) {
 		      final View v = PanigaleActivity.this.findViewById(eqViews[i-1]);
-		      byte rfk = bytes[i];
-		      byte ifk = bytes[i+1];
+		      byte rfk = bytes[barMult*i];
+		      byte ifk = bytes[barMult*i+1];
 		      float mag = (rfk*rfk + ifk*ifk);
-		      int height = (int) (50*Math.log10(mag));
+		      int height = (int) (mVolume*Math.log10(mag));
 		      final LayoutParams layoutParams = v.getLayoutParams();
 		      layoutParams.height = height;
 		      mainHandler.post(new Runnable() {
