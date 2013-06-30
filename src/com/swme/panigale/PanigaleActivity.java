@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
+import android.media.audiofx.NoiseSuppressor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,12 +19,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class PanigaleActivity extends Activity implements ScaleEventListener {
+public class PanigaleActivity extends Activity implements 
+							  ScaleEventListener, 
+					      AudioThread.AudioReadyListener {
 
-	private static final String LOG_TAG = "PanigaleActivity";
+	public static final String LOG_TAG = "PanigaleActivity";
 	private static final int CAPTURE_RATE = (int)
 						(Visualizer.getMaxCaptureRate() -
-						Visualizer.getMaxCaptureRate()* 0.2f);
+						Visualizer.getMaxCaptureRate()* 0.0f);
 	private static byte[] array;
 	private Visualizer mVisualizer;
 	private MediaPlayer mPlayer;
@@ -54,7 +57,7 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 	private Handler handler;
 */	
 	private Handler mainHandler;
-
+	private AudioThread mAudioThread;
 	private View eq;
 	
 	private ArrayAdapter<CharSequence> placeSpinnerAdapter;
@@ -82,6 +85,8 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 		eq = findViewById(R.id.eq_container);
 		ScaleView sV = (ScaleView) findViewById(R.id.scale_view);
 		sV.addScaleEventListener(this);
+
+		startAudioThread();
 /*		
 		if (handlerThread == null) {
 			handlerThread = new HandlerThread("EQ Thread");
@@ -96,7 +101,7 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 			handler = new Handler(handlerThread.getLooper());
 			handler.postDelayed(new EqRunnable(), 50);
 		}*/
-		startPlaying();
+		//startPlaying();
 	}
 
 //	private void createHeaderTypeface() {
@@ -153,8 +158,14 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 	}
 	
 
+	public void startAudioThread() {
+	  if(mAudioThread == null) {
+	    mAudioThread = new AudioThread(this);
+	    //mAudioThread.getAudioSessionId();
+	  }
+	}
 
-	public void startPlaying() {
+	public void onAudioReady(int audioSessionId ) {
 	  
 	  /*Not entirely necessary.
 	  mPlayer = new MediaPlayer();
@@ -168,15 +179,16 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 	  mPlayer.start();*/
 	  //setup your Vizualizer - call method
 	  //setupVisualizerFxAndUI();        
-	  setupVisualizer();
+	  setupVisualizer(audioSessionId);
 	  mVisualizer.setEnabled(true);
 	}
 
-	public void setupVisualizer() {
+	public void setupVisualizer(int audioSessionId) {
 	  // Create the Visualizer object and attach it to our media player.
 	  //YOU NEED android.permission.RECORD_AUDIO for that in AndroidManifest.xml
 	  //steal the audio out
-	  mVisualizer = new Visualizer(0);
+	  mVisualizer = new Visualizer(audioSessionId);
+	  NoiseSuppressor.create(audioSessionId);
 	  //steal the file playback... not too exciting.
 	  //mVisualizer = new Visualizer(mPlayer.getAudioSessionId());
 	  mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
@@ -191,13 +203,15 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 		//double modifier = Math.random();
 		//here I'm trying to drop the top X0 percent of values to 
 		//make it look more full
-		float range = (float) bytes.length-bytes.length*0.6f;
+		int initOffset = 10;
+		int shortRange = bytes.length - initOffset;
+		float range = (float) shortRange-shortRange*0.9f;
 		//number of bars evenly distributed over range
 		int barMult = (int)(range / 9.0f);
 		  for (int i=1; i < eqViews.length+1; i++) {
 		      final View v = PanigaleActivity.this.findViewById(eqViews[i-1]);
-		      byte rfk = bytes[barMult*i];
-		      byte ifk = bytes[barMult*i+1];
+		      byte rfk = bytes[barMult*i+initOffset];
+		      byte ifk = bytes[barMult*i+1+initOffset];
 		      float mag = (rfk*rfk + ifk*ifk);
 		      int height = (int) (mVolume*Math.log10(mag));
 		      final LayoutParams layoutParams = v.getLayoutParams();
@@ -233,7 +247,7 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
             mPlayer = null;
         }
   }
-
+/*
   @Override
   public void onResume() {
         super.onResume();
@@ -241,7 +255,7 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 	  startPlaying();
         }
   }
-
+*/
 
 
 }
