@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ public class VisActivity extends Activity {
       //Here is your URL defined
   private String mFileName = null;
       //Constants for vizualizator - HEIGHT 50dip
+  private static final String LOG_TAG = "AudioRecordTest";
   private static final float VISUALIZER_HEIGHT_DIP = 50f;
 
       //Your MediaPlayer
@@ -64,40 +66,18 @@ public class VisActivity extends Activity {
       //start media player - like normal
       mp = new MediaPlayer();
       //mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-      try {
-	  mp.setDataSource(mFileName); // set data source our URL defined
-      } catch (IllegalArgumentException e) {
-	  // TODO Auto-generated catch block
-	  e.printStackTrace();
-      } catch (IllegalStateException e) {
-	  // TODO Auto-generated catch block
-	  e.printStackTrace();
-      } catch (IOException e) {
-	  // TODO Auto-generated catch block
-	  e.printStackTrace();
-      }       
-
-      try {   //tell your player to go to prepare state
-	  mp.prepare(); 
-      } catch (IllegalStateException e) {
-	  // TODO Auto-generated catch block
-	  e.printStackTrace();
-      } catch (IOException e) {
-	  // TODO Auto-generated catch block
-	  e.printStackTrace();
+      try{
+	mp.setDataSource(mFileName); // set data source our URL defined
+	mp.prepare(); 
+      }catch (IOException e) {
+	  Log.e(LOG_TAG, "prepare() failed");
       }
-	      //Start your stream / player
       mp.start();
-
       //setup your Vizualizer - call method
       setupVisualizerFxAndUI();        
-
-	      //enable vizualizer
-	      mVisualizer.setEnabled(true);
-
-	      //Info text
-      mStatusTextView.setText("Playing audio...");
+      mVisualizer.setEnabled(true);
+      //Info text
+      //mStatusTextView.setText("Playing audio...");
   }
 
       //Our method that sets Vizualizer
@@ -132,7 +112,6 @@ public class VisActivity extends Activity {
 
       if (isFinishing() && mp != null) {
 	  mVisualizer.release();
-	  //mEqualizer.release();
 	  mp.release();
 	  mp = null;
       }
