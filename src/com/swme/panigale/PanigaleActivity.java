@@ -70,7 +70,6 @@ public class PanigaleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_panigale);
 		
-		
 		// create spinner
 		Spinner spinner = (Spinner) findViewById(R.id.status_spinner);
 		
@@ -92,7 +91,8 @@ public class PanigaleActivity extends Activity {
 		if (handler == null) {
 			handler = new Handler(handlerThread.getLooper());
 			handler.postDelayed(new EqRunnable(), 50);
-		}
+		}	
+				
 	}
 
 	@Override
@@ -101,5 +101,7 @@ public class PanigaleActivity extends Activity {
 		getMenuInflater().inflate(R.menu.panigale, menu);
 		return true;
 	}
+	
+
 
 }
