@@ -1,6 +1,7 @@
 package com.swme.panigale;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.os.Bundle;
@@ -10,10 +11,12 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class PanigaleActivity extends Activity implements ScaleEventListener {
 
@@ -59,12 +62,17 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//Remove title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_panigale);
 /*		mFileName = Environment
 		  		.getExternalStorageDirectory()
 				.getAbsolutePath();
 		mFileName += "/audiorecordtest.3gp";
 */		
+		
+		// set header
+//		createHeaderTypeface();
 		
 		// create spinners
 		createActivitySpinner();
@@ -90,6 +98,12 @@ public class PanigaleActivity extends Activity implements ScaleEventListener {
 		}*/
 		startPlaying();
 	}
+
+//	private void createHeaderTypeface() {
+//		TextView header = (TextView) findViewById(R.id.header);
+//		Typeface avenirTypeface = Typeface.createFromAsset(getAssets(), "AvenirLTStd-Light.otf");
+//		header.setTypeface(avenirTypeface);
+//	}
 
 	private void createActivitySpinner() {
 		Spinner activitySpinner = (Spinner) findViewById(R.id.activity_spinner);
