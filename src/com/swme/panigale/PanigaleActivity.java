@@ -203,6 +203,7 @@ public class PanigaleActivity extends Activity implements
 		//double modifier = Math.random();
 		//here I'm trying to drop the top X0 percent of values to 
 		//make it look more full
+		int maxDelta = 150;
 		int initOffset = 10;
 		int shortRange = bytes.length - initOffset;
 		float range = (float) shortRange-shortRange*0.9f;
@@ -215,7 +216,14 @@ public class PanigaleActivity extends Activity implements
 		      float mag = (rfk*rfk + ifk*ifk);
 		      int height = (int) (mVolume*Math.log10(mag));
 		      final LayoutParams layoutParams = v.getLayoutParams();
-		      layoutParams.height = height;
+		      int old_height = v.getMeasuredHeight();
+		      int delta = (height - old_height);
+		      if( delta < 0 ) {
+			delta = (delta < -maxDelta)? -maxDelta : delta;
+		      }else{
+			delta = (delta > maxDelta)? maxDelta : delta;
+		      }
+		      layoutParams.height = old_height+delta;
 		      mainHandler.post(new Runnable() {
 				  @Override
 				  public void run() {
