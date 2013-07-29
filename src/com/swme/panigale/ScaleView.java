@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.util.Log;
 
 /**
  * Scales a rectangle. 
@@ -24,6 +25,7 @@ public class ScaleView extends FrameLayout {
 	private ScaleGestureDetector detector;
 	private int bounds;
 	private TextView description;
+	private int MAX_BOUNDS = 250;
 	
 	public ScaleView(Context context) {
 		super(context);
@@ -72,10 +74,15 @@ public class ScaleView extends FrameLayout {
 	      }
 	      int newBounds;
 	      if (scaleFactor < 1) {
-		      newBounds = bounds + (int) (250 * (1 - scaleFactor));	
+		      newBounds = bounds + (int) (MAX_BOUNDS * (1 - scaleFactor));	
 	      } else {
-		      newBounds = bounds - (int) (250 * (scaleFactor - 1));
+		      newBounds = bounds - (int) (MAX_BOUNDS * (scaleFactor - 1));
 	      }
+	      
+	      AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+	      int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+		  audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, Math.max(1, (int) ((maxVolume - ((float) newBounds / MAX_BOUNDS * maxVolume)) / 1.5f)), 0);  
+	      
 	      return scaleNow(newBounds);
 	  }
 	}
@@ -106,7 +113,7 @@ public class ScaleView extends FrameLayout {
 	public void addTextViewForUpdating(TextView textView) {
 		this.description = textView;
 	}
-/*	
+/*
 	public void setBounds(int bounds) {
 		this.bounds = checkBounds(bounds);
 		invalidate();

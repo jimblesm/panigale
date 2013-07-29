@@ -22,8 +22,7 @@ import android.widget.TextView;
 import android.util.Log;
 
 public class PanigaleActivity extends Activity implements 
-							  ScaleEventListener, 
-					      AudioThread.AudioReadyListener {
+							  ScaleEventListener {
 
 	public static final String LOG_TAG = "PanigaleActivity";
 	private static final int CAPTURE_RATE = (int)
@@ -88,7 +87,7 @@ public class PanigaleActivity extends Activity implements
 		ScaleView sV = (ScaleView) findViewById(R.id.scale_view);
 		sV.addScaleEventListener(this);
 
-		startAudioThread();
+//		startAudioThread();
 /*		
 		if (handlerThread == null) {
 			handlerThread = new HandlerThread("EQ Thread");
@@ -103,7 +102,7 @@ public class PanigaleActivity extends Activity implements
 			handler = new Handler(handlerThread.getLooper());
 			handler.postDelayed(new EqRunnable(), 50);
 		}*/
-		//startPlaying();
+		startPlaying();
 		
 		description = (TextView) findViewById(R.id.description);
 		ScaleView scaleView = (ScaleView) findViewById(R.id.scale_view);
@@ -176,14 +175,15 @@ public class PanigaleActivity extends Activity implements
 	}
 	
 
-	public void startAudioThread() {
-	  if(mAudioThread == null) {
-	    mAudioThread = new AudioThread(this);
+//	public void startAudioThread() {
+//	  if(mAudioThread == null) {
+//	    mAudioThread = new AudioThread(this);
 	    //mAudioThread.getAudioSessionId();
-	  }
-	}
-
-	public void onAudioReady(int audioSessionId ) {
+//	  }
+//	}
+	
+	public void startPlaying() {
+//	public void onAudioReady(int audioSessionId ) {
 	  
 	  /*Not entirely necessary.
 	  mPlayer = new MediaPlayer();
@@ -197,16 +197,19 @@ public class PanigaleActivity extends Activity implements
 	  mPlayer.start();*/
 	  //setup your Vizualizer - call method
 	  //setupVisualizerFxAndUI();        
-	  setupVisualizer(audioSessionId);
+//	  setupVisualizer(audioSessionId);
+		setupVisualizer();
 	  mVisualizer.setEnabled(true);
 	}
 
-	public void setupVisualizer(int audioSessionId) {
+	public void setupVisualizer() {
+//	public void setupVisualizer(int audioSessionId) {
 	  // Create the Visualizer object and attach it to our media player.
 	  //YOU NEED android.permission.RECORD_AUDIO for that in AndroidManifest.xml
 	  //steal the audio out
-	  mVisualizer = new Visualizer(audioSessionId);
-	  NoiseSuppressor.create(audioSessionId);
+		mVisualizer = new Visualizer(0);
+//	  mVisualizer = new Visualizer(audioSessionId);
+//	  NoiseSuppressor.create(audioSessionId);
 	  //steal the file playback... not too exciting.
 	  //mVisualizer = new Visualizer(mPlayer.getAudioSessionId());
 	  mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
@@ -222,13 +225,16 @@ public class PanigaleActivity extends Activity implements
 		//here I'm trying to drop the top X0 percent of values to 
 		//make it look more full
 		int maxDelta = 150;
+		float range = (float) bytes.length-bytes.length*0.6f;
 		int initOffset = 10;
 		int shortRange = bytes.length - initOffset;
-		float range = (float) shortRange-shortRange*0.9f;
+//		float range = (float) shortRange-shortRange*0.9f;
 		//number of bars evenly distributed over range
 		int barMult = (int)(range / 9.0f);
 		  for (int i=1; i < eqViews.length+1; i++) {
 		      final View v = PanigaleActivity.this.findViewById(eqViews[i-1]);
+//		      byte rfk = bytes[barMult*i];
+//		      byte ifk = bytes[barMult*i+1];
 		      byte rfk = bytes[barMult*i+initOffset];
 		      byte ifk = bytes[barMult*i+1+initOffset];
 		      float mag = (rfk*rfk + ifk*ifk);
